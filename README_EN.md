@@ -15,7 +15,7 @@ On Red Magic 8S Pro+ (NX729J), the split-screen divider in landscape mode can on
 | Item | Description |
 | --- | --- |
 | Device | Red Magic 8S Pro+ (NX729J) ✅ tested |
-| OS | RedMagicOS 10 (Android 15) |
+| OS | RedMagicOS 10.0.12 (Android 15) |
 | Framework | LSPosed (Zygisk / KernelSU) |
 | Other Red Magic models | ⚠️ Not tested, unknown |
 
