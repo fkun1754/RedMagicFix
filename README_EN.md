@@ -4,7 +4,7 @@
 
 > An Xposed module that removes the split-screen ratio limit on Red Magic 8S Pro+ and enables stepless adjustment.
 
-On Red Magic 8S Pro+ (NX729J), the split-screen divider in landscape mode can only snap to 1:1. This module removes that limit, allowing stepless ratio adjustment in both landscape and portrait, while keeping the system's "drag to edge to dismiss split-screen" behavior.
+On Red Magic 8S Pro+ (NX729J), the split-screen divider in landscape mode can only snap to 1:1. This module removes that limit, allowing stepless ratio adjustment in both landscape and portrait.
 
 ## Features
 
