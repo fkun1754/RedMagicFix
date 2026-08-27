@@ -15,7 +15,7 @@
 | 项目 | 说明 |
 | --- | --- |
 | 设备 | 红魔 8S Pro+（NX729J）✅ 已实测 |
-| 系统 | RedMagicOS 10（Android 15） |
+| 系统 | RedMagicOS 10.0.12（Android 15） |
 | 框架 | LSPosed（Zygisk / KernelSU 均可） |
 | 其他红魔机型 | ⚠️ 未测试，可用性未知 |
 
