@@ -8,8 +8,7 @@ On Red Magic 8S Pro+ (NX729J), the split-screen divider in landscape mode can on
 
 ## Features
 
-- **Stepless adjustment**: drag the divider to any position and release — works in both landscape and portrait
-- **Non-invasive**: no system files are modified; disabling the module fully restores stock behavior
+- Stepless split-screen ratio: drag the divider to any position and release — works in both landscape and portrait
 
 ## Compatibility
 
