@@ -9,7 +9,6 @@ On Red Magic 8S Pro+ (NX729J), the split-screen divider in landscape mode can on
 ## Features
 
 - **Stepless adjustment**: drag the divider to any position and release — works in both landscape and portrait
-- **Official gesture preserved**: dragging to the screen edge still dismisses split-screen
 - **Non-invasive**: no system files are modified; disabling the module fully restores stock behavior
 
 ## Compatibility
@@ -39,7 +38,7 @@ Requires Android SDK (build-tools 35, platforms/android-35) and JDK 17+.
 
 ## How it works
 
-Hooks the divider snap calculation (`DividerSnapAlgorithm.calculateSnapTarget`): when the divider is inside the screen, it stays where you release it (stepless); when dragged off the screen edge, the original system logic (dismiss split-screen) is left untouched.
+Hooks the divider snap calculation (`DividerSnapAlgorithm.calculateSnapTarget`): when the divider is inside the screen, it stays where you release it (stepless adjustment).
 
 Pure AI-built project, developed entirely by DeepSeek V4 Flash + Hermes Agent.
 

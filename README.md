@@ -9,7 +9,6 @@
 ## 功能
 
 - **无级调节**：分隔条拖到任意位置松手即停，横屏竖屏均生效
-- **保留官方手势**：拖到屏幕边缘关闭分屏，行为不变
 - **零侵入**：不修改任何系统文件，停用模块即完全还原
 
 ## 兼容性
@@ -39,7 +38,7 @@ bash build.sh
 
 ## 工作原理
 
-Hook 系统分屏的停靠点计算（`DividerSnapAlgorithm.calculateSnapTarget`）：分隔条位于屏幕内时直接停靠当前位置，实现无级调节；拖出屏幕边缘时放行系统原逻辑，保留关闭分屏。
+Hook 系统分屏的停靠点计算（`DividerSnapAlgorithm.calculateSnapTarget`）：分隔条位于屏幕内时直接停靠当前位置，实现无级调节。
 
 纯 AI 构建项目，由 DeepSeek V4 Flash + Hermes Agent 全程开发完成。
 
