@@ -1,0 +1,17 @@
+# Build output
+build/
+out/
+
+# APK & keys
+*.apk
+*.keystore
+
+# Reverse engineering artifacts
+*.dex
+*.smali
+*.so
+
+# IDE
+.idea/
+*.iml
+.vscode/
