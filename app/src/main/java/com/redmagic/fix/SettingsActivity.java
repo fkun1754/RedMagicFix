@@ -20,14 +20,14 @@ public class SettingsActivity extends Activity {
             Prefs.SPLIT, Prefs.SMALL_WINDOW, Prefs.DOUBLE_APP, Prefs.VIBRATOR, Prefs.GAME_KEY
     };
     private static final String[] TITLES = {
-            "分屏比例无级调节", "小窗不限应用", "应用分身不限应用", "手柄震动转手机震动", "红魔键放行"
+            "分屏比例无级调节", "小窗不限应用", "应用分身不限应用", "手柄震动转手机震动", "手柄 Home 键放行"
     };
     private static final String[] DESCS = {
             "分隔条拖到任意位置松手即停",
             "常规小窗与游戏模式小窗可打开任意第三方 App",
             "分身列表显示所有已安装的第三方 App",
             "手柄没有马达时，游戏震动改为震动手机",
-            "游戏里红魔键不再唤出游戏助手，完整交给游戏；侧滑面板保持可用"
+            "游戏里 Home 键不再唤出游戏助手，完整交给游戏；侧滑面板保持可用"
     };
     private static final boolean[] DEFAULTS = {true, true, true, true, false};
 
@@ -57,7 +57,12 @@ public class SettingsActivity extends Activity {
         hint.setPadding(0, dp(6), 0, dp(16));
         root.addView(hint);
 
-        for (int i = 0; i < KEYS.length; i++) {
+        addSection(root, "手机功能修改");
+        for (int i = 0; i < 3; i++) {
+            root.addView(buildRow(i));
+        }
+        addSection(root, "手柄功能修改");
+        for (int i = 3; i < KEYS.length; i++) {
             root.addView(buildRow(i));
         }
 
@@ -98,6 +103,15 @@ public class SettingsActivity extends Activity {
         row.addView(desc);
 
         return row;
+    }
+
+    private void addSection(LinearLayout root, String title) {
+        TextView header = new TextView(this);
+        header.setText(title);
+        header.setTextSize(13);
+        header.setTextColor(Color.GRAY);
+        header.setPadding(0, dp(18), 0, dp(2));
+        root.addView(header);
     }
 
     private boolean readSetting(String key, boolean def) {
