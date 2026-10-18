@@ -18,7 +18,7 @@
 
 - 手柄 Home 键放行：手柄 Home 键（`BTN_MODE`）在游戏里不再被系统拦去唤出游戏助手，改为完整交给游戏；侧滑唤出面板不受影响
 
-所有功能都可以在设置页里单独开关，修改后即时生效。模块默认不显示桌面图标，可在设置页打开「显示桌面图标」；没图标时从快捷设置面板的「RedMagic Fix」磁贴进入设置（也可以 `adb shell am start -n com.redmagic.fix/.SettingsActivity`）。
+所有功能都可以在设置页里单独开关，修改后即时生效。模块默认不显示桌面图标，可在设置页打开「显示桌面图标」；没图标时从 LSPosed → 模块 → RedMagic Fix 的设置入口进入（也可以 `adb shell am start -n com.redmagic.fix/.SettingsActivity`）。
 
 > Android 15 禁止普通应用向 `Settings.System` 写入自定义键，因此首次修改开关时会请求 root（KernelSU/Magisk 授权）来写入配置，仅此一处需要 root。
 

@@ -126,14 +126,14 @@ public class SettingsActivity extends Activity {
             writeSetting(Prefs.HIDE_ICON, !isChecked);
             if (!isChecked) {
                 Toast.makeText(this,
-                        "已隐藏桌面图标：可下拉快捷设置点「RedMagic Fix」磁贴打开设置",
+                        "已隐藏桌面图标：可从 LSPosed 的模块设置入口打开",
                         Toast.LENGTH_LONG).show();
             }
         });
         row.addView(sw);
 
         TextView desc = new TextView(this);
-        desc.setText("关闭后桌面不再显示图标，可从快捷设置面板的「RedMagic Fix」磁贴打开设置；重新打开开关即可恢复");
+        desc.setText("关闭后桌面不再显示图标，可从 LSPosed → 模块 → RedMagic Fix 的设置入口打开；重新打开开关即可恢复");
         desc.setTextSize(13);
         desc.setTextColor(Color.GRAY);
         desc.setPadding(dp(4), dp(2), 0, 0);

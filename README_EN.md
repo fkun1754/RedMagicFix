@@ -18,7 +18,7 @@ Red Magic 8S Pro+ (NX729J) ships with a few limits: the split-screen divider onl
 
 - Home key pass-through: in-game the gamepad Home key (`BTN_MODE`) is no longer intercepted to open the game assistant, and instead reaches the game; edge-swipe still opens the panel
 
-Every feature can be toggled individually on the settings screen, effective immediately. The module ships with no launcher icon; enable "Show launcher icon" in the settings screen if you want one. Without an icon, open the settings from the "RedMagic Fix" quick-settings tile (or `adb shell am start -n com.redmagic.fix/.SettingsActivity`).
+Every feature can be toggled individually on the settings screen, effective immediately. The module ships with no launcher icon; enable "Show launcher icon" in the settings screen if you want one. Without an icon, open the settings from LSPosed → Modules → RedMagic Fix (or `adb shell am start -n com.redmagic.fix/.SettingsActivity`).
 
 > Android 15 blocks apps from writing custom `Settings.System` keys, so toggling a switch asks for root (KernelSU/Magisk) once to persist the value.
 
