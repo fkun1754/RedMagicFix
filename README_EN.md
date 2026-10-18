@@ -4,7 +4,7 @@
 
 > An Xposed module for Red Magic 8S Pro+, split into **phone tweaks** and **gamepad tweaks**. Everything is a runtime hook; no system APK is modified and disabling a switch restores stock behaviour.
 
-Red Magic 8S Pro+ (NX729J) ships with a few limits: the split-screen divider only snaps to 1:1, small windows only accept a system whitelist, app cloning only offers a handful of apps, and the GameSir Red Magic gamepad's Home key is intercepted by the system to open the game assistant. This module lifts them one by one.
+Red Magic 8S Pro+ (NX729J) ships with a few limits: the split-screen divider only snaps to 1:1, small windows only accept a system whitelist, app cloning only offers a handful of apps, and the gamepad's Home key is intercepted by the system to open the game assistant. This module lifts them one by one.
 
 ## Features
 
@@ -18,7 +18,11 @@ Red Magic 8S Pro+ (NX729J) ships with a few limits: the split-screen divider onl
 
 - Home key pass-through: in-game the gamepad Home key (`BTN_MODE`) is no longer intercepted to open the game assistant, and instead reaches the game; edge-swipe still opens the panel
 
-Every feature can be toggled individually on the settings screen, effective immediately. The launcher icon is hidden by default ("Hide launcher icon" is checked); uncheck it to show the icon. Without an icon, open the settings from LSPosed → Modules → RedMagic Fix (or `adb shell am start -n com.redmagic.fix/.SettingsActivity`).
+## Settings screen
+
+Four switches: stepless split ratio, small windows for any app, cloning for any app, gamepad Home key pass-through. Changes apply within 1.5 s (framework-side changes need a reboot).
+
+There is also a "Hide launcher icon" switch, checked by default (the manifest declares `android:enabled="false"`). With no icon, open the settings from **LSPosed → Modules → RedMagic Fix** (or `adb shell am start -n com.redmagic.fix/.SettingsActivity`).
 
 > Switch values are served by a read-only ContentProvider shipped with the module: no root and no "modify system settings" permission required.
 
@@ -42,7 +46,7 @@ Every feature can be toggled individually on the settings screen, effective imme
    - App Cloning `com.zte.cn.doubleapp`
 4. Reboot the device
 
-After installing, the **RedMagic Fix** icon appears in the launcher; grant "Modify system settings" to toggle each feature.
+After rebooting, open the module settings entry in LSPosed to configure it. (No launcher icon by default; uncheck "Hide launcher icon" to show one.)
 
 Optional scopes (off by default):
 
