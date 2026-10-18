@@ -171,6 +171,8 @@ public class MainHook implements IXposedHookLoadPackage {
                                 param.setResult(result);
                             } catch (Throwable t) {
                                 Log.e(TAG, "pass BTN_MODE to policy failed", t);
+                                // 1 = ACTION_PASS_TO_USER，宁可交给前台应用也不要被拦截
+                                param.setResult(1);
                             }
                         }
                     });
