@@ -9,8 +9,8 @@ BT="$SDK/build-tools/35.0.0"
 PLATFORM="$SDK/platforms/android-35"
 JAVA_HOME_DIR=$(java -XshowSettings:properties -version 2>&1 | grep 'java.home' | sed 's/.*= //')
 KEYTOOL="$JAVA_HOME_DIR/bin/keytool.exe"
-KEYSTORE="splitfix.keystore"
-PKG="com.redmagic.splitfix"
+KEYSTORE="redmagicfix.keystore"
+PKG="com.redmagic.fix"
 
 SRC="app/src/main/java"
 OUT="build"
@@ -62,6 +62,6 @@ if [ ! -f "$KEYSTORE" ]; then
 fi
 java -jar "$BT/lib/apksigner.jar" sign \
   --ks "$KEYSTORE" --ks-pass pass:android --ks-key-alias splitfix \
-  --out "$OUT/SplitFix-v1.3.apk" "$OUT/unsigned.apk"
-java -jar "$BT/lib/apksigner.jar" verify "$OUT/SplitFix-v1.3.apk" && echo "SIGN OK"
-ls -la "$OUT/SplitFix-v1.3.apk"
+  --out "$OUT/RedMagicFix-v1.4.apk" "$OUT/unsigned.apk"
+java -jar "$BT/lib/apksigner.jar" verify "$OUT/RedMagicFix-v1.4.apk" && echo "SIGN OK"
+ls -la "$OUT/RedMagicFix-v1.4.apk"

@@ -2,5 +2,11 @@
 <resources>
     <string-array name="xposed_scope">
         <item>com.android.systemui</item>
+        <item>android</item>
+        <item>com.zte.cn.doubleapp</item>
+        <item>com.zte.floatassist</item>
+        <item>cn.zte.gamefloat</item>
+        <item>cn.nubia.gamelauncher</item>
+        <item>cn.nubia.gameassist</item>
     </string-array>
 </resources>

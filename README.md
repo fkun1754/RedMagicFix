@@ -1,14 +1,16 @@
 **语言：中文**（[English](./README_EN.md)）
 
-# SplitFix
+# RedMagic Fix
 
-> 为红魔 8S Pro+ 解除分屏比例限制，改为无级调节的 Xposed 模块。
+> 红魔 8S Pro+ 限制解除模块：分屏比例无级调节、小窗不限应用、应用分身支持任意第三方 App。
 
-红魔 8S Pro+（NX729J）横屏分屏时，分隔条只能停在 1:1，无法调节比例。本模块解除该限制，横竖屏均可无级调节分屏比例。
+红魔 8S Pro+（NX729J）上有三处限制：横屏分屏分隔条只能停在 1:1；小窗只允许系统白名单里的应用打开；应用分身只能选固定的几个 App。本模块把这三处限制一起解除，全部为运行时 Hook，不改动任何系统 APK，关闭模块即恢复原状。
 
 ## 功能
 
 - 分屏比例无级调节：分隔条拖到任意位置松手即停，横屏、竖屏均生效
+- 小窗不限应用：常规小窗与游戏模式小窗都能打开任意第三方 App
+- 应用分身不限应用：分身列表显示所有已安装的第三方 App
 
 ## 兼容性
 
@@ -22,24 +24,46 @@
 ## 安装
 
 1. 在 [Releases](../../releases) 下载最新 APK 并安装
-2. 打开 LSPosed → 模块 → 启用 SplitFix
-3. 作用域勾选「系统界面」（com.android.systemui）
-4. 点击「重启 SystemUI」
+2. 打开 LSPosed → 模块 → 启用 RedMagic Fix
+3. 作用域勾选以下 7 项：
+   - 系统界面 `com.android.systemui`
+   - 系统框架 `android`
+   - 应用分身 `com.zte.cn.doubleapp`
+   - 常规小窗 `com.zte.floatassist`
+   - 游戏浮窗 `cn.zte.gamefloat`
+   - 游戏空间 `cn.nubia.gamelauncher`
+   - 游戏助手 `cn.nubia.gameassist`
+4. 重启手机
 
 ## 构建
 
 ```bash
 bash build.sh
-# 输出：build/SplitFix-v1.3.apk
+# 输出：build/RedMagicFix-v1.4.apk
+```
+
+Windows PowerShell：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File build.ps1
 ```
 
 依赖：Android SDK（build-tools 35、platforms/android-35）、JDK 17+。
 
 ## 工作原理
 
-Hook 系统分屏的停靠点计算（`DividerSnapAlgorithm.calculateSnapTarget`）：分隔条位于屏幕内时直接停靠当前位置，实现无级调节。
+- 分屏：Hook 系统分屏的停靠点计算（`DividerSnapAlgorithm.calculateSnapTarget`），分隔条位于屏幕内时直接停靠当前位置
+- 小窗：Hook 系统的小窗支持判断（`ActivityClientController.checkTaskSupportWr`、`TaskDisplayAreaMifavor.checkTaskSupportForCompWr`），并在各小窗 App 内做兜底；常规小窗与游戏模式小窗共用这一处判断
+- 分身：Hook 应用分身的支持列表（`UpdateUtils.getSupportApps`），返回所有带桌面图标的第三方 App
 
-纯 AI 构建项目，由 DeepSeek V4 Flash + Hermes Agent 全程开发完成。
+## 已知限制
+
+- 应用分身只放开第三方 App，系统 App 不会出现在列表里
+- 常规浮窗列表最多 15 个 App 的上限未改动
+- 部分 App 自身不适配自由窗口，可能出现黑边、界面错位或闪退
+- 银行、支付类 App 可能因自身安全策略拒绝在分身环境运行
+
+纯 AI 构建项目，由 DeepSeek V4 Flash + Hermes Agent 全程开发，1.4 版本由 Codex 迭代。
 
 ## 免责声明
 

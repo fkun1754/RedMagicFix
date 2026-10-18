@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.redmagic.splitfix"
-    android:versionCode="4" android:versionName="1.3">
-    <application android:label="SplitFix 横屏分屏比例">
+    package="com.redmagic.fix"
+    android:versionCode="5" android:versionName="1.4">
+    <application android:label="RedMagic Fix">
         <meta-data android:name="xposedmodule" android:value="true" />
         <meta-data android:name="xposeddescription"
-            android:value="分屏分隔条无级调节（横竖屏任意比例自由停靠），保留拖到边缘关闭分屏" />
+            android:value="红魔 8S Pro+ 限制解除：分屏比例无级调节、小窗应用不设限、应用分身支持任意第三方 App" />
         <meta-data android:name="xposedminversion" android:value="93" />
         <meta-data android:name="xposedscope" android:resource="@array/xposed_scope" />
     </application>
