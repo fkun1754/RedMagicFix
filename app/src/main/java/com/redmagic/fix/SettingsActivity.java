@@ -105,13 +105,13 @@ public class SettingsActivity extends Activity {
         row.setPadding(0, dp(10), 0, dp(10));
 
         Switch sw = new Switch(this);
-        sw.setText("显示桌面图标");
+        sw.setText("隐藏桌面图标");
         sw.setTextSize(16);
         sw.setTextColor(Color.BLACK);
-        sw.setChecked(!isIconHidden());
+        sw.setChecked(isIconHidden());
         sw.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            setIconHidden(!isChecked);
-            if (!isChecked) {
+            setIconHidden(isChecked);
+            if (isChecked) {
                 Toast.makeText(this,
                         "已隐藏桌面图标：可从 LSPosed 的模块设置入口打开",
                         Toast.LENGTH_LONG).show();
@@ -120,7 +120,7 @@ public class SettingsActivity extends Activity {
         row.addView(sw);
 
         TextView desc = new TextView(this);
-        desc.setText("关闭后桌面不再显示图标，可从 LSPosed → 模块 → RedMagic Fix 的设置入口打开；重新打开开关即可恢复");
+        desc.setText("默认隐藏。关闭开关后桌面显示图标；隐藏时从 LSPosed → 模块 → RedMagic Fix 的设置入口打开");
         desc.setTextSize(13);
         desc.setTextColor(Color.GRAY);
         desc.setPadding(dp(4), dp(2), 0, 0);
