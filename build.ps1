@@ -46,6 +46,6 @@ if (-not (Test-Path $keystore)) {
     }
     & $keytool -genkeypair -v -keystore $keystore -storepass android -alias redmagicfix -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=RedMagicFix, OU=RedMagic, O=RedMagic, C=CN"
 }
-& java -jar "$bt\lib\apksigner.jar" sign --ks $keystore --ks-pass pass:android --ks-key-alias redmagicfix --out "$out\RedMagicFix-v1.4.apk" "$out\unsigned.apk"
-& java -jar "$bt\lib\apksigner.jar" verify "$out\RedMagicFix-v1.4.apk"
-Get-Item "$out\RedMagicFix-v1.4.apk" | Select-Object FullName, Length
+& java -jar "$bt\lib\apksigner.jar" sign --ks $keystore --ks-pass pass:android --ks-key-alias redmagicfix --out "$out\RedMagicFix-v1.5.apk" "$out\unsigned.apk"
+& java -jar "$bt\lib\apksigner.jar" verify "$out\RedMagicFix-v1.5.apk"
+Get-Item "$out\RedMagicFix-v1.5.apk" | Select-Object FullName, Length

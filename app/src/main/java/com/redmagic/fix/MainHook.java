@@ -110,6 +110,15 @@ public class MainHook implements IXposedHookLoadPackage {
             XposedHelpers.findAndHookMethod(tda, "checkTaskSupportForCompWr",
                     Context.class, ComponentName.class, alwaysTrue());
             Log.d(TAG, "hook installed: checkTaskSupportForCompWr");
+
+            // 真正切 freeform 前的第二道校验，不通过会弹"该应用不支持小窗"
+            Class<?> record = XposedHelpers.findClass("com.android.server.wm.ActivityRecord", cl);
+            Class<?> task = XposedHelpers.findClass("com.android.server.wm.Task", cl);
+            hookReturn(tda, "isSupportWindowReplyState", 0, record, Context.class);
+            hookReturn(tda, "isSupportWindowReplyStateForTask", 0, task, Context.class);
+            hookReturn(tda, "isSupportWindowReply", true, int.class);
+            hookReturn(tda, "isResizeable", true, record);
+            Log.d(TAG, "hook installed: WindowReply state checks");
         } catch (Throwable t) {
             Log.e(TAG, "checkTaskSupportForCompWr hook failed", t);
         }
@@ -146,6 +155,20 @@ public class MainHook implements IXposedHookLoadPackage {
                 param.setResult(Boolean.TRUE);
             }
         };
+    }
+
+    /** 把静态方法的返回值固定成指定值 */
+    private static void hookReturn(Class<?> cls, String method, final Object value,
+                                   Object... paramTypes) {
+        Object[] args = new Object[paramTypes.length + 1];
+        System.arraycopy(paramTypes, 0, args, 0, paramTypes.length);
+        args[paramTypes.length] = new XC_MethodHook() {
+            @Override
+            protected void afterHookedMethod(MethodHookParam param) {
+                param.setResult(value);
+            }
+        };
+        XposedHelpers.findAndHookMethod(cls, method, args);
     }
 
     /** 分身支持列表：返回所有带桌面图标的第三方 App */

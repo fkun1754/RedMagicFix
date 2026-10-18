@@ -39,7 +39,7 @@ On Red Magic 8S Pro+ (NX729J) the split-screen divider only snaps to 1:1, small 
 
 ```bash
 bash build.sh
-# Output: build/RedMagicFix-v1.4.apk
+# Output: build/RedMagicFix-v1.5.apk
 ```
 
 Windows PowerShell:

@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.5
+
+- 修复：应用已能加入小窗列表，但实际打开时仍提示"不支持小窗"
+
 ## 1.4
 
 - 模块更名为 RedMagic Fix（包名 `com.redmagic.fix`）
