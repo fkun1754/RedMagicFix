@@ -149,8 +149,44 @@ public class SettingsActivity extends Activity {
             Settings.System.putInt(getContentResolver(), key, value ? 1 : 0);
             return true;
         } catch (Throwable t) {
-            Toast.makeText(this, "写入失败，请先授予「修改系统设置」权限", Toast.LENGTH_LONG).show();
+            // Android 15 拒绝普通应用写自定义 Settings.System 键，退回 root 写入
+            if (writeViaRoot(key, value)) {
+                return true;
+            }
+            try {
+                java.io.FileOutputStream out = new java.io.FileOutputStream(
+                        new java.io.File(getFilesDir(), "write_error.txt"), false);
+                out.write((key + "=" + value + "\n" + android.util.Log.getStackTraceString(t))
+                        .getBytes("UTF-8"));
+                out.close();
+            } catch (Throwable ignored) {
+            }
+            Toast.makeText(this, "写入失败：需要授予 root 权限或修改系统设置权限", Toast.LENGTH_LONG).show();
             return false;
+        }
+    }
+
+    private boolean writeViaRoot(String key, boolean value) {
+        Process process = null;
+        try {
+            process = Runtime.getRuntime().exec(new String[]{
+                    "su", "-c", "/system/bin/settings put system " + key + " " + (value ? "1" : "0")
+            });
+            int code = process.waitFor();
+            if (code != 0) {
+                return false;
+            }
+            int expected = value ? 1 : 0;
+            return Settings.System.getInt(getContentResolver(), key, -1) == expected;
+        } catch (Throwable t) {
+            return false;
+        } finally {
+            if (process != null) {
+                try {
+                    process.destroy();
+                } catch (Throwable ignored) {
+                }
+            }
         }
     }
 

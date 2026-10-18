@@ -21,6 +21,8 @@
 
 所有功能都可以在设置页里单独开关，修改后即时生效；设置页还提供「隐藏桌面图标」选项，隐藏后可从快捷设置面板的「RedMagic Fix」磁贴重新打开（也可以用 `adb shell am start -n com.redmagic.fix/.SettingsActivity`）。
 
+> Android 15 禁止普通应用向 `Settings.System` 写入自定义键，因此首次修改开关时会请求 root（KernelSU/Magisk 授权）来写入配置，仅此一处需要 root。
+
 ## 兼容性
 
 | 项目 | 说明 |

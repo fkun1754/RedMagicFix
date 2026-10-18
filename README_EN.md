@@ -21,6 +21,8 @@ Red Magic 8S Pro+ (NX729J) ships with a few limits: the split-screen divider onl
 
 Every feature can be toggled individually on the settings screen, effective immediately. The screen also offers "Hide launcher icon"; reopen it from the "RedMagic Fix" quick-settings tile (or `adb shell am start -n com.redmagic.fix/.SettingsActivity`).
 
+> Android 15 blocks apps from writing custom `Settings.System` keys, so toggling a switch asks for root (KernelSU/Magisk) once to persist the value.
+
 ## Compatibility
 
 | Item | Description |
