@@ -6,7 +6,10 @@ public final class Prefs {
     public static final String SMALL_WINDOW = "redmagic_fix_smallwin";
     public static final String DOUBLE_APP = "redmagic_fix_doubleapp";
     public static final String GAME_KEY = "redmagic_fix_gamekey";
-    public static final String HIDE_ICON = "redmagic_fix_hide_icon";
+
+    public static boolean defaultFor(String key) {
+        return !GAME_KEY.equals(key);
+    }
 
     private Prefs() {
     }

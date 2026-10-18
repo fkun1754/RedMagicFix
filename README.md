@@ -20,7 +20,7 @@
 
 所有功能都可以在设置页里单独开关，修改后即时生效。模块默认不显示桌面图标，可在设置页打开「显示桌面图标」；没图标时从 LSPosed → 模块 → RedMagic Fix 的设置入口进入（也可以 `adb shell am start -n com.redmagic.fix/.SettingsActivity`）。
 
-> Android 15 禁止普通应用向 `Settings.System` 写入自定义键，因此首次修改开关时会请求 root（KernelSU/Magisk 授权）来写入配置，仅此一处需要 root。
+> 开关的取值由模块自带的只读 ContentProvider 提供，不需要 root，也不需要「修改系统设置」权限。
 
 ## 兼容性
 

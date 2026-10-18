@@ -20,7 +20,7 @@ Red Magic 8S Pro+ (NX729J) ships with a few limits: the split-screen divider onl
 
 Every feature can be toggled individually on the settings screen, effective immediately. The module ships with no launcher icon; enable "Show launcher icon" in the settings screen if you want one. Without an icon, open the settings from LSPosed → Modules → RedMagic Fix (or `adb shell am start -n com.redmagic.fix/.SettingsActivity`).
 
-> Android 15 blocks apps from writing custom `Settings.System` keys, so toggling a switch asks for root (KernelSU/Magisk) once to persist the value.
+> Switch values are served by a read-only ContentProvider shipped with the module: no root and no "modify system settings" permission required.
 
 ## Compatibility
 

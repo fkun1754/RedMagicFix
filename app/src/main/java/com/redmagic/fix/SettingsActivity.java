@@ -69,17 +69,6 @@ public class SettingsActivity extends Activity {
         addSection(root, "其他");
         root.addView(buildHideIconRow());
 
-        if (!Settings.System.canWrite(this)) {
-            Button grant = new Button(this);
-            grant.setText("授予修改系统设置权限");
-            grant.setOnClickListener(v -> {
-                Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS);
-                intent.setData(Uri.parse("package:" + getPackageName()));
-                startActivity(intent);
-            });
-            root.addView(grant);
-        }
-
         setContentView(scroll);
     }
 
@@ -94,9 +83,8 @@ public class SettingsActivity extends Activity {
         sw.setTextColor(Color.BLACK);
         sw.setChecked(readSetting(KEYS[index], DEFAULTS[index]));
         sw.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (!writeSetting(KEYS[index], isChecked)) {
-                buttonView.setChecked(!isChecked);
-            }
+            getSharedPreferences(ConfigProvider.PREFS, 0).edit()
+                    .putBoolean(KEYS[index], isChecked).apply();
         });
         switches[index] = sw;
         row.addView(sw);
@@ -123,7 +111,6 @@ public class SettingsActivity extends Activity {
         sw.setChecked(!isIconHidden());
         sw.setOnCheckedChangeListener((buttonView, isChecked) -> {
             setIconHidden(!isChecked);
-            writeSetting(Prefs.HIDE_ICON, !isChecked);
             if (!isChecked) {
                 Toast.makeText(this,
                         "已隐藏桌面图标：可从 LSPosed 的模块设置入口打开",
@@ -141,56 +128,10 @@ public class SettingsActivity extends Activity {
         return row;
     }
 
-    private boolean writeSetting(String key, boolean value) {
-        try {
-            Settings.System.putInt(getContentResolver(), key, value ? 1 : 0);
-            return true;
-        } catch (Throwable t) {
-            // Android 15 拒绝普通应用写自定义 Settings.System 键，退回 root 写入
-            if (writeViaRoot(key, value)) {
-                return true;
-            }
-            try {
-                java.io.FileOutputStream out = new java.io.FileOutputStream(
-                        new java.io.File(getFilesDir(), "write_error.txt"), false);
-                out.write((key + "=" + value + "\n" + android.util.Log.getStackTraceString(t))
-                        .getBytes("UTF-8"));
-                out.close();
-            } catch (Throwable ignored) {
-            }
-            Toast.makeText(this, "写入失败：需要授予 root 权限或修改系统设置权限", Toast.LENGTH_LONG).show();
-            return false;
-        }
-    }
-
-    private boolean writeViaRoot(String key, boolean value) {
-        Process process = null;
-        try {
-            process = Runtime.getRuntime().exec(new String[]{
-                    "su", "-c", "/system/bin/settings put system " + key + " " + (value ? "1" : "0")
-            });
-            int code = process.waitFor();
-            if (code != 0) {
-                return false;
-            }
-            int expected = value ? 1 : 0;
-            return Settings.System.getInt(getContentResolver(), key, -1) == expected;
-        } catch (Throwable t) {
-            return false;
-        } finally {
-            if (process != null) {
-                try {
-                    process.destroy();
-                } catch (Throwable ignored) {
-                }
-            }
-        }
-    }
-
     private boolean isIconHidden() {
         ComponentName alias = new ComponentName(this, getPackageName() + ".Launcher");
         return getPackageManager().getComponentEnabledSetting(alias)
-                == PackageManager.COMPONENT_ENABLED_STATE_DISABLED;
+                != PackageManager.COMPONENT_ENABLED_STATE_ENABLED;
     }
 
     private void setIconHidden(boolean hidden) {
@@ -215,7 +156,7 @@ public class SettingsActivity extends Activity {
     }
 
     private boolean readSetting(String key, boolean def) {
-        return Settings.System.getInt(getContentResolver(), key, def ? 1 : 0) == 1;
+        return getSharedPreferences(ConfigProvider.PREFS, 0).getBoolean(key, def);
     }
 
     private int dp(int value) {

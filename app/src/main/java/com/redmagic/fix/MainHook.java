@@ -8,8 +8,9 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.SystemClock;
-import android.provider.Settings;
 import android.view.KeyEvent;
 import android.util.Log;
 
@@ -320,12 +321,32 @@ public class MainHook implements IXposedHookLoadPackage {
             }
             ContentResolver cr = ctx.getContentResolver();
             for (int i = 0; i < CFG_KEYS.length; i++) {
-                cfgValues[i] = Settings.System.getInt(cr, CFG_KEYS[i],
-                        CFG_DEFAULTS[i] ? 1 : 0) == 1;
+                cfgValues[i] = readConfig(cr, CFG_KEYS[i], CFG_DEFAULTS[i]);
             }
         } catch (Throwable t) {
             Log.e(TAG, "read config failed", t);
         }
+    }
+
+    private static boolean readConfig(ContentResolver cr, String key, boolean def) {
+        Cursor cursor = null;
+        try {
+            cursor = cr.query(
+                    Uri.parse("content://" + ConfigProvider.AUTHORITY + "/" + key),
+                    null, null, null, null);
+            if (cursor != null && cursor.moveToFirst()) {
+                return cursor.getInt(0) == 1;
+            }
+        } catch (Throwable ignored) {
+        } finally {
+            if (cursor != null) {
+                try {
+                    cursor.close();
+                } catch (Throwable ignored) {
+                }
+            }
+        }
+        return def;
     }
 
     private static Context context() {
