@@ -19,7 +19,7 @@ Red Magic 8S Pro+ (NX729J) ships with a few limits: the split-screen divider onl
 - Home key pass-through: in-game the gamepad Home key (`BTN_MODE`) is no longer intercepted to open the game assistant, and instead reaches the game; edge-swipe still opens the panel
 - Rumble to phone: the gamepad has no motor, so game rumble vibrates the phone instead (currently for Headup)
 
-Every feature can be toggled individually on the settings screen, effective immediately.
+Every feature can be toggled individually on the settings screen, effective immediately. The screen also offers "Hide launcher icon"; reopen it from LSPosed's module settings or `adb shell am start -n com.redmagic.fix/.SettingsActivity`.
 
 ## Compatibility
 

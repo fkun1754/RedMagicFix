@@ -29,7 +29,7 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
  * 2) 小窗支持判断放行（android / system_server，另在各小窗 App 内兜底）
  * 3) 应用分身支持列表放开（com.zte.cn.doubleapp）
  * 4) 手柄震动转手机震动（头玩）
- * 5) 红魔键 BTN_MODE 放行（android / system_server）
+ * 5) 手柄 Home 键 BTN_MODE 放行（android / system_server）
  */
 public class MainHook implements IXposedHookLoadPackage {
 
@@ -152,7 +152,7 @@ public class MainHook implements IXposedHookLoadPackage {
             Log.e(TAG, "checkTaskSupportForCompWr hook failed", t);
         }
 
-        // 红魔键：ZTE 在游戏场景里把 BTN_MODE 拦下并让游戏助手弹面板，
+        // 手柄 Home 键：ZTE 在游戏场景里把 BTN_MODE 拦下并让游戏助手弹面板，
         // 这里把该键交还给正常的窗口策略链路（侧滑唤出不受影响）
         try {
             Class<?> ims = XposedHelpers.findClass(

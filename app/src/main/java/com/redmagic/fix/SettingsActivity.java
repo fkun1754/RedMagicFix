@@ -1,7 +1,9 @@
 package com.redmagic.fix;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -13,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class SettingsActivity extends Activity {
 
@@ -66,6 +69,9 @@ public class SettingsActivity extends Activity {
             root.addView(buildRow(i));
         }
 
+        addSection(root, "其他");
+        root.addView(buildHideIconRow());
+
         if (!Settings.System.canWrite(this)) {
             Button grant = new Button(this);
             grant.setText("授予修改系统设置权限");
@@ -90,8 +96,11 @@ public class SettingsActivity extends Activity {
         sw.setTextSize(16);
         sw.setTextColor(Color.BLACK);
         sw.setChecked(readSetting(KEYS[index], DEFAULTS[index]));
-        sw.setOnCheckedChangeListener((buttonView, isChecked) ->
-                Settings.System.putInt(getContentResolver(), KEYS[index], isChecked ? 1 : 0));
+        sw.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (!writeSetting(KEYS[index], isChecked)) {
+                buttonView.setChecked(!isChecked);
+            }
+        });
         switches[index] = sw;
         row.addView(sw);
 
@@ -103,6 +112,64 @@ public class SettingsActivity extends Activity {
         row.addView(desc);
 
         return row;
+    }
+
+    private LinearLayout buildHideIconRow() {
+        LinearLayout row = new LinearLayout(this);
+        row.setOrientation(LinearLayout.VERTICAL);
+        row.setPadding(0, dp(10), 0, dp(10));
+
+        Switch sw = new Switch(this);
+        sw.setText("隐藏桌面图标");
+        sw.setTextSize(16);
+        sw.setTextColor(Color.BLACK);
+        sw.setChecked(isIconHidden());
+        sw.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            setIconHidden(isChecked);
+            writeSetting(Prefs.HIDE_ICON, isChecked);
+            if (isChecked) {
+                Toast.makeText(this,
+                        "已隐藏桌面图标：可从 LSPosed 模块页或 adb 重新打开设置",
+                        Toast.LENGTH_LONG).show();
+            }
+        });
+        row.addView(sw);
+
+        TextView desc = new TextView(this);
+        desc.setText("隐藏后可用 LSPosed 的模块设置入口，或 adb shell am start -n com.redmagic.fix/.SettingsActivity 重新打开");
+        desc.setTextSize(13);
+        desc.setTextColor(Color.GRAY);
+        desc.setPadding(dp(4), dp(2), 0, 0);
+        row.addView(desc);
+        return row;
+    }
+
+    private boolean writeSetting(String key, boolean value) {
+        try {
+            Settings.System.putInt(getContentResolver(), key, value ? 1 : 0);
+            return true;
+        } catch (Throwable t) {
+            Toast.makeText(this, "写入失败，请先授予「修改系统设置」权限", Toast.LENGTH_LONG).show();
+            return false;
+        }
+    }
+
+    private boolean isIconHidden() {
+        ComponentName alias = new ComponentName(this, getPackageName() + ".Launcher");
+        return getPackageManager().getComponentEnabledSetting(alias)
+                == PackageManager.COMPONENT_ENABLED_STATE_DISABLED;
+    }
+
+    private void setIconHidden(boolean hidden) {
+        try {
+            ComponentName alias = new ComponentName(this, getPackageName() + ".Launcher");
+            int state = hidden
+                    ? PackageManager.COMPONENT_ENABLED_STATE_DISABLED
+                    : PackageManager.COMPONENT_ENABLED_STATE_ENABLED;
+            getPackageManager().setComponentEnabledSetting(alias, state, PackageManager.DONT_KILL_APP);
+        } catch (Throwable t) {
+            Toast.makeText(this, "切换桌面图标失败", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void addSection(LinearLayout root, String title) {
