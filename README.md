@@ -17,9 +17,8 @@
 ### 手柄功能修改
 
 - 手柄 Home 键放行：手柄 Home 键（`BTN_MODE`）在游戏里不再被系统拦去唤出游戏助手，改为完整交给游戏；侧滑唤出面板不受影响
-- 手柄震动转手机：手柄没有马达，游戏发出的震动改为震动手机（需要对目标游戏单独加作用域）
 
-所有功能都可以在设置页里单独开关，修改后即时生效；设置页还提供「隐藏桌面图标」选项，隐藏后可从快捷设置面板的「RedMagic Fix」磁贴重新打开（也可以用 `adb shell am start -n com.redmagic.fix/.SettingsActivity`）。
+所有功能都可以在设置页里单独开关，修改后即时生效。模块默认不显示桌面图标，可在设置页打开「显示桌面图标」；没图标时从快捷设置面板的「RedMagic Fix」磁贴进入设置（也可以 `adb shell am start -n com.redmagic.fix/.SettingsActivity`）。
 
 > Android 15 禁止普通应用向 `Settings.System` 写入自定义键，因此首次修改开关时会请求 root（KernelSU/Magisk 授权）来写入配置，仅此一处需要 root。
 
@@ -47,7 +46,6 @@
 
 可选作用域（默认不勾选）：
 
-- 需要「手柄震动转手机」时，手动把目标游戏的包名加进作用域（目前实现只对 `com.headup.epic.smbf` 生效）
 - 常规小窗 / 游戏浮窗 / 游戏空间 / 游戏助手：仅在小窗功能异常时作为兜底
 
 ## 构建
@@ -76,7 +74,6 @@ powershell -ExecutionPolicy Bypass -File build.ps1
 ### 手柄功能
 
 - Home 键：Hook 系统的 `InputManagerService.interceptKeyBeforeQueueing`，把游戏场景下被 ZTE 拦截的 `BTN_MODE` 交还给窗口策略链路，侧滑唤出面板不受影响
-- 震动：Hook `InputDevice.getVibrator()`，手柄没有马达时返回手机自己的振动器
 
 ## 已知限制
 
@@ -85,7 +82,6 @@ powershell -ExecutionPolicy Bypass -File build.ps1
 - 部分 App 自身不适配自由窗口，可能出现黑边、界面错位或闪退
 - 银行、支付类 App 可能因自身安全策略拒绝在分身环境运行
 - 手柄 Home 键放行只对按下时处于游戏场景的 App 生效
-- 游戏必须真的向手柄请求震动，才会触发"震动转手机"
 
 纯 AI 构建项目，由 DeepSeek V4 Flash + Hermes Agent 全程开发，1.4 起由 Codex 迭代。
 

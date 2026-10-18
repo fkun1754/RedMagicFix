@@ -4,7 +4,7 @@
 
 > An Xposed module for Red Magic 8S Pro+, split into **phone tweaks** and **gamepad tweaks**. Everything is a runtime hook; no system APK is modified and disabling a switch restores stock behaviour.
 
-Red Magic 8S Pro+ (NX729J) ships with a few limits: the split-screen divider only snaps to 1:1, small windows only accept a system whitelist, app cloning only offers a handful of apps, and the GameSir Red Magic gamepad has no rumble motor while its Home key is intercepted by the system to open the game assistant. This module lifts them one by one.
+Red Magic 8S Pro+ (NX729J) ships with a few limits: the split-screen divider only snaps to 1:1, small windows only accept a system whitelist, app cloning only offers a handful of apps, and the GameSir Red Magic gamepad's Home key is intercepted by the system to open the game assistant. This module lifts them one by one.
 
 ## Features
 
@@ -17,9 +17,8 @@ Red Magic 8S Pro+ (NX729J) ships with a few limits: the split-screen divider onl
 ### Gamepad tweaks
 
 - Home key pass-through: in-game the gamepad Home key (`BTN_MODE`) is no longer intercepted to open the game assistant, and instead reaches the game; edge-swipe still opens the panel
-- Rumble to phone: the gamepad has no motor, so game rumble vibrates the phone instead (requires adding the target game to the scope)
 
-Every feature can be toggled individually on the settings screen, effective immediately. The screen also offers "Hide launcher icon"; reopen it from the "RedMagic Fix" quick-settings tile (or `adb shell am start -n com.redmagic.fix/.SettingsActivity`).
+Every feature can be toggled individually on the settings screen, effective immediately. The module ships with no launcher icon; enable "Show launcher icon" in the settings screen if you want one. Without an icon, open the settings from the "RedMagic Fix" quick-settings tile (or `adb shell am start -n com.redmagic.fix/.SettingsActivity`).
 
 > Android 15 blocks apps from writing custom `Settings.System` keys, so toggling a switch asks for root (KernelSU/Magisk) once to persist the value.
 
@@ -47,7 +46,6 @@ After installing, the **RedMagic Fix** icon appears in the launcher; grant "Modi
 
 Optional scopes (off by default):
 
-- Add the target game's package manually to use "rumble to phone" (only `com.headup.epic.smbf` is implemented)
 - Floating Window / Game Float / Game Space / Game Assist: fallbacks only needed if the small-window feature misbehaves
 
 ## Build
@@ -76,7 +74,6 @@ Requires Android SDK (build-tools 35, platforms/android-35) and JDK 17+.
 ### Gamepad tweaks
 
 - Home key: hooks `InputManagerService.interceptKeyBeforeQueueing` so the `BTN_MODE` intercepted in game mode falls through to the normal window policy; edge-swipe is untouched
-- Rumble: hooks `InputDevice.getVibrator()` and returns the phone vibrator when the gamepad has none
 
 ## Known limitations
 
@@ -85,7 +82,6 @@ Requires Android SDK (build-tools 35, platforms/android-35) and JDK 17+.
 - Some apps do not handle freeform resizing well and may show black bars, layout glitches or crash
 - Banking and payment apps may refuse to run inside a clone for their own security reasons
 - Home key pass-through only applies to apps that are in a game scene when the key is pressed
-- A game must actually request rumble from the gamepad for "rumble to phone" to trigger
 
 Pure AI-built project, developed entirely by DeepSeek V4 Flash + Hermes Agent; iterated by Codex since 1.4.
 

@@ -20,19 +20,18 @@ import android.widget.Toast;
 public class SettingsActivity extends Activity {
 
     private static final String[] KEYS = {
-            Prefs.SPLIT, Prefs.SMALL_WINDOW, Prefs.DOUBLE_APP, Prefs.VIBRATOR, Prefs.GAME_KEY
+            Prefs.SPLIT, Prefs.SMALL_WINDOW, Prefs.DOUBLE_APP, Prefs.GAME_KEY
     };
     private static final String[] TITLES = {
-            "分屏比例无级调节", "小窗不限应用", "应用分身不限应用", "手柄震动转手机震动", "手柄 Home 键放行"
+            "分屏比例无级调节", "小窗不限应用", "应用分身不限应用", "手柄 Home 键放行"
     };
     private static final String[] DESCS = {
             "分隔条拖到任意位置松手即停",
             "常规小窗与游戏模式小窗可打开任意第三方 App",
             "分身列表显示所有已安装的第三方 App",
-            "手柄没有马达时，游戏震动改为震动手机",
             "游戏里 Home 键不再唤出游戏助手，完整交给游戏；侧滑面板保持可用"
     };
-    private static final boolean[] DEFAULTS = {true, true, true, true, false};
+    private static final boolean[] DEFAULTS = {true, true, true, false};
 
     private final Switch[] switches = new Switch[KEYS.length];
 
@@ -65,9 +64,7 @@ public class SettingsActivity extends Activity {
             root.addView(buildRow(i));
         }
         addSection(root, "手柄功能修改");
-        for (int i = 3; i < KEYS.length; i++) {
-            root.addView(buildRow(i));
-        }
+        root.addView(buildRow(3));
 
         addSection(root, "其他");
         root.addView(buildHideIconRow());
@@ -120,23 +117,23 @@ public class SettingsActivity extends Activity {
         row.setPadding(0, dp(10), 0, dp(10));
 
         Switch sw = new Switch(this);
-        sw.setText("隐藏桌面图标");
+        sw.setText("显示桌面图标");
         sw.setTextSize(16);
         sw.setTextColor(Color.BLACK);
-        sw.setChecked(isIconHidden());
+        sw.setChecked(!isIconHidden());
         sw.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            setIconHidden(isChecked);
-            writeSetting(Prefs.HIDE_ICON, isChecked);
-            if (isChecked) {
+            setIconHidden(!isChecked);
+            writeSetting(Prefs.HIDE_ICON, !isChecked);
+            if (!isChecked) {
                 Toast.makeText(this,
-                        "已隐藏桌面图标：可下拉快捷设置点「RedMagic Fix」磁贴重新打开",
+                        "已隐藏桌面图标：可下拉快捷设置点「RedMagic Fix」磁贴打开设置",
                         Toast.LENGTH_LONG).show();
             }
         });
         row.addView(sw);
 
         TextView desc = new TextView(this);
-        desc.setText("隐藏后可从快捷设置面板的「RedMagic Fix」磁贴打开，或执行 adb shell am start -n com.redmagic.fix/.SettingsActivity");
+        desc.setText("关闭后桌面不再显示图标，可从快捷设置面板的「RedMagic Fix」磁贴打开设置；重新打开开关即可恢复");
         desc.setTextSize(13);
         desc.setTextColor(Color.GRAY);
         desc.setPadding(dp(4), dp(2), 0, 0);

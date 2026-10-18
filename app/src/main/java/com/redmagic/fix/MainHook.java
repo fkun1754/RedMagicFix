@@ -50,15 +50,10 @@ public class MainHook implements IXposedHookLoadPackage {
             "cn.nubia.gameassist"        // 游戏助手
     };
 
-    /** 需要把"手柄震动"转成"手机震动"的应用 */
-    private static final String[] VIBRATE_APP_PKGS = {
-            "com.headup.epic.smbf"       // 头玩
-    };
-
     private static final String[] CFG_KEYS = {
-            Prefs.SPLIT, Prefs.SMALL_WINDOW, Prefs.DOUBLE_APP, Prefs.VIBRATOR, Prefs.GAME_KEY
+            Prefs.SPLIT, Prefs.SMALL_WINDOW, Prefs.DOUBLE_APP, Prefs.GAME_KEY
     };
-    private static final boolean[] CFG_DEFAULTS = {true, true, true, true, false};
+    private static final boolean[] CFG_DEFAULTS = {true, true, true, false};
     private static final boolean[] cfgValues = CFG_DEFAULTS.clone();
     private static long cfgLastRead = 0;
 
@@ -80,12 +75,6 @@ public class MainHook implements IXposedHookLoadPackage {
             }
         }
 
-        for (String target : VIBRATE_APP_PKGS) {
-            if (target.equals(pkg)) {
-                hookGamepadVibrator(lpparam);
-                break;
-            }
-        }
     }
 
     /** 分隔条自由停靠：屏幕内任意位置松手即停，拖出边缘仍走系统逻辑关闭分屏 */
@@ -222,47 +211,6 @@ public class MainHook implements IXposedHookLoadPackage {
                 }
             }
         };
-    }
-
-    /**
-     * 手柄没有马达：把 InputDevice.getVibrator() 的 null 换成手机自己的振动器，
-     * 游戏调用震动时直接震手机。
-     */
-    private void hookGamepadVibrator(LoadPackageParam lpparam) {
-        try {
-            Class<?> inputDevice = XposedHelpers.findClass("android.view.InputDevice", lpparam.classLoader);
-            XposedHelpers.findAndHookMethod(inputDevice, "getVibrator", new XC_MethodHook() {
-                @Override
-                protected void afterHookedMethod(MethodHookParam param) {
-                    if (!enabled(Prefs.VIBRATOR)) {
-                        return;
-                    }
-                    Object original = param.getResult();
-                    if (original != null) {
-                        return;
-                    }
-                    try {
-                        Context ctx = context();
-                        if (ctx == null) {
-                            return;
-                        }
-                        Object manager = ctx.getSystemService("vibrator_manager");
-                        if (manager == null) {
-                            return;
-                        }
-                        Object vibrator = XposedHelpers.callMethod(manager, "getDefaultVibrator");
-                        if (vibrator != null) {
-                            param.setResult(vibrator);
-                        }
-                    } catch (Throwable t) {
-                        Log.e(TAG, "provide phone vibrator failed", t);
-                    }
-                }
-            });
-            Log.d(TAG, "hook installed: InputDevice.getVibrator -> phone vibrator");
-        } catch (Throwable t) {
-            Log.e(TAG, "vibrator hook failed", t);
-        }
     }
 
     /** 分身支持列表：返回所有带桌面图标的第三方 App */
