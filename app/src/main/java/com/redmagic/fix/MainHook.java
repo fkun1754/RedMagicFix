@@ -10,6 +10,8 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.SystemClock;
 import android.view.KeyEvent;
 import android.util.Log;
@@ -57,6 +59,8 @@ public class MainHook implements IXposedHookLoadPackage {
     private static final boolean[] CFG_DEFAULTS = {true, true, true, false};
     private static final boolean[] cfgValues = CFG_DEFAULTS.clone();
     private static long cfgLastRead = 0;
+    private static volatile boolean cfgRefreshing = false;
+    private static Handler cfgHandler;
 
     @Override
     public void handleLoadPackage(LoadPackageParam lpparam) throws Throwable {
@@ -301,9 +305,20 @@ public class MainHook implements IXposedHookLoadPackage {
 
     private static boolean enabled(String key) {
         long now = SystemClock.elapsedRealtime();
-        if (now - cfgLastRead > 1500L) {
-            refreshConfig();
+        if (now - cfgLastRead > 1500L && !cfgRefreshing) {
             cfgLastRead = now;
+            cfgRefreshing = true;
+            // 放到后台线程查询，避免阻塞输入分发线程
+            cfgHandler().post(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        refreshConfig();
+                    } finally {
+                        cfgRefreshing = false;
+                    }
+                }
+            });
         }
         for (int i = 0; i < CFG_KEYS.length; i++) {
             if (CFG_KEYS[i].equals(key)) {
@@ -311,6 +326,15 @@ public class MainHook implements IXposedHookLoadPackage {
             }
         }
         return true;
+    }
+
+    private static synchronized Handler cfgHandler() {
+        if (cfgHandler == null) {
+            HandlerThread thread = new HandlerThread("rmf-config");
+            thread.start();
+            cfgHandler = new Handler(thread.getLooper());
+        }
+        return cfgHandler;
     }
 
     private static void refreshConfig() {
@@ -321,14 +345,17 @@ public class MainHook implements IXposedHookLoadPackage {
             }
             ContentResolver cr = ctx.getContentResolver();
             for (int i = 0; i < CFG_KEYS.length; i++) {
-                cfgValues[i] = readConfig(cr, CFG_KEYS[i], CFG_DEFAULTS[i]);
+                Boolean value = readConfig(cr, CFG_KEYS[i]);
+                if (value != null) {
+                    cfgValues[i] = value;
+                }
             }
         } catch (Throwable t) {
             Log.e(TAG, "read config failed", t);
         }
     }
 
-    private static boolean readConfig(ContentResolver cr, String key, boolean def) {
+    private static Boolean readConfig(ContentResolver cr, String key) {
         Cursor cursor = null;
         try {
             cursor = cr.query(
@@ -346,7 +373,7 @@ public class MainHook implements IXposedHookLoadPackage {
                 }
             }
         }
-        return def;
+        return null;
     }
 
     private static Context context() {
