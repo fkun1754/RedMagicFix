@@ -9,7 +9,12 @@
             android:value="红魔 8S Pro+ 限制解除：分屏比例无级调节、小窗不限应用、应用分身不限应用、手柄震动转手机、手柄 Home 键放行" />
         <meta-data android:name="xposedminversion" android:value="93" />
         <meta-data android:name="xposedscope" android:resource="@array/xposed_scope" />
-        <activity android:name=".SettingsActivity" android:exported="true" android:label="RedMagic Fix" />
+        <activity android:name=".SettingsActivity" android:exported="true" android:label="RedMagic Fix">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.INFO" />
+            </intent-filter>
+        </activity>
         <activity-alias
             android:name=".Launcher"
             android:exported="true"

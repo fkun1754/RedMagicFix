@@ -17,7 +17,7 @@ Red Magic 8S Pro+ (NX729J) ships with a few limits: the split-screen divider onl
 ### Gamepad tweaks
 
 - Home key pass-through: in-game the gamepad Home key (`BTN_MODE`) is no longer intercepted to open the game assistant, and instead reaches the game; edge-swipe still opens the panel
-- Rumble to phone: the gamepad has no motor, so game rumble vibrates the phone instead (currently for Headup)
+- Rumble to phone: the gamepad has no motor, so game rumble vibrates the phone instead (requires adding the target game to the scope)
 
 Every feature can be toggled individually on the settings screen, effective immediately. The screen also offers "Hide launcher icon"; reopen it from the "RedMagic Fix" quick-settings tile (or `adb shell am start -n com.redmagic.fix/.SettingsActivity`).
 
@@ -35,16 +35,18 @@ Every feature can be toggled individually on the settings screen, effective imme
 
 1. Download the latest APK from [Releases](../../releases) and install it
 2. Open LSPosed → Modules → enable RedMagic Fix
-3. Select these 4 scopes:
+3. Select these 3 scopes:
    - System UI `com.android.systemui`
    - System Framework `android`
    - App Cloning `com.zte.cn.doubleapp`
-   - Headup `com.headup.epic.smbf`
 4. Reboot the device
 
 After installing, the **RedMagic Fix** icon appears in the launcher; grant "Modify system settings" to toggle each feature.
 
-Optional scopes (off by default): Floating Window / Game Float / Game Space / Game Assist, fallbacks only needed if the small-window feature misbehaves.
+Optional scopes (off by default):
+
+- Add the target game's package manually to use "rumble to phone" (only `com.headup.epic.smbf` is implemented)
+- Floating Window / Game Float / Game Space / Game Assist: fallbacks only needed if the small-window feature misbehaves
 
 ## Build
 
