@@ -1,12 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.redmagic.fix"
-    android:versionCode="6" android:versionName="1.5">
+    android:versionCode="7" android:versionName="1.6">
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
     <application android:label="RedMagic Fix">
         <meta-data android:name="xposedmodule" android:value="true" />
         <meta-data android:name="xposeddescription"
-            android:value="红魔 8S Pro+ 限制解除：分屏比例无级调节、小窗应用不设限、应用分身支持任意第三方 App" />
+            android:value="红魔 8S Pro+ 限制解除：分屏比例无级调节、小窗不限应用、应用分身不限应用、手柄震动转手机、红魔键放行" />
         <meta-data android:name="xposedminversion" android:value="93" />
         <meta-data android:name="xposedscope" android:resource="@array/xposed_scope" />
+        <activity android:name=".SettingsActivity" android:exported="true" android:label="RedMagic Fix">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 </manifest>

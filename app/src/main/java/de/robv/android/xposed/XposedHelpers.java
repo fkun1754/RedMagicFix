@@ -52,6 +52,16 @@ public class XposedHelpers {
         } catch (Exception e) { throw new RuntimeException(e); }
     }
 
+    public static Object callStaticMethod(Class<?> clazz, String methodName, Object... args) {
+        Class<?>[] types = new Class<?>[args.length];
+        for (int i = 0; i < args.length; i++) types[i] = args[i].getClass();
+        try {
+            Method m = clazz.getDeclaredMethod(methodName, types);
+            m.setAccessible(true);
+            return m.invoke(null, args);
+        } catch (Exception e) { throw new RuntimeException(e); }
+    }
+
     public static XC_MethodHook.Unhook findAndHookMethod(Class<?> clazz, String methodName,
             Object... parameterTypesAndCallback) {
         int n = parameterTypesAndCallback.length;
