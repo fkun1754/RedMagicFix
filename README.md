@@ -35,18 +35,18 @@
 
 1. 在 [Releases](../../releases) 下载最新 APK 并安装
 2. 打开 LSPosed → 模块 → 启用 RedMagic Fix
-3. 作用域勾选以下 8 项：
+3. 作用域勾选以下 3 项：
    - 系统界面 `com.android.systemui`
    - 系统框架 `android`
    - 应用分身 `com.zte.cn.doubleapp`
-   - 常规小窗 `com.zte.floatassist`
-   - 游戏浮窗 `cn.zte.gamefloat`
-   - 游戏空间 `cn.nubia.gamelauncher`
-   - 游戏助手 `cn.nubia.gameassist`
-   - 头玩 `com.headup.epic.smbf`
 4. 重启手机
 
 安装后桌面会出现 **RedMagic Fix** 图标，打开后先授予「修改系统设置」权限，即可逐项开关。
+
+可选作用域（默认不勾选）：
+
+- 头玩 `com.headup.epic.smbf`：只有需要「手柄震动转手机」时才勾选，其他功能不需要
+- 常规小窗 / 游戏浮窗 / 游戏空间 / 游戏助手：仅在小窗功能异常时作为兜底，正常情况不需要
 
 ## 构建
 

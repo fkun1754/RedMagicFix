@@ -35,18 +35,18 @@ Every feature can be toggled individually on the settings screen, effective imme
 
 1. Download the latest APK from [Releases](../../releases) and install it
 2. Open LSPosed → Modules → enable RedMagic Fix
-3. Select all 8 scopes:
+3. Select these 3 scopes:
    - System UI `com.android.systemui`
    - System Framework `android`
    - App Cloning `com.zte.cn.doubleapp`
-   - Floating Window `com.zte.floatassist`
-   - Game Float `cn.zte.gamefloat`
-   - Game Space `cn.nubia.gamelauncher`
-   - Game Assist `cn.nubia.gameassist`
-   - Headup `com.headup.epic.smbf`
 4. Reboot the device
 
 After installing, the **RedMagic Fix** icon appears in the launcher; grant "Modify system settings" to toggle each feature.
+
+Optional scopes (off by default):
+
+- Headup `com.headup.epic.smbf`: only needed for "rumble to phone"
+- Floating Window / Game Float / Game Space / Game Assist: fallback scopes, only needed if the small-window feature misbehaves
 
 ## Build
 
