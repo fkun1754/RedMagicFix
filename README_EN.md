@@ -13,6 +13,8 @@ Red Magic 8S Pro+ (NX729J) ships with a few limits: the split-screen divider onl
 - Stepless split-screen ratio: drag the divider anywhere and release — works in both landscape and portrait
 - Any app in small window: both normal-mode and in-game small windows accept any third-party app
 - Any app can be cloned: the app-cloning list shows every installed third-party app
+- Cast follows the sink resolution: the mirror/additional display uses the sink's resolution (e.g. 1920×1080 TV) instead of the phone's
+- Cast mouse fix: mouse left/right buttons work; right click is no longer turned into Back
 
 ### Gamepad tweaks
 
@@ -20,7 +22,7 @@ Red Magic 8S Pro+ (NX729J) ships with a few limits: the split-screen divider onl
 
 ## Settings screen
 
-Four switches: stepless split ratio, small windows for any app, cloning for any app, gamepad Home key pass-through. Changes apply within 1.5 s (framework-side changes need a reboot).
+Five switches: stepless split ratio, small windows for any app, cloning for any app, cast resolution follow, gamepad Home key pass-through. Changes apply within 1.5 s (framework-side changes need a reboot).
 
 There is also a "Hide launcher icon" switch, checked by default (the manifest declares `android:enabled="false"`). With no icon, open the settings from **LSPosed → Modules → RedMagic Fix** (or `adb shell am start -n com.redmagic.fix/.SettingsActivity`).
 
@@ -56,7 +58,7 @@ Optional scopes (off by default):
 
 ```bash
 bash build.sh
-# Output: build/RedMagicFix-v1.6.apk
+# Output: build/RedMagicFix-v1.7.apk
 ```
 
 Windows PowerShell:
@@ -74,6 +76,7 @@ Requires Android SDK (build-tools 35, platforms/android-35) and JDK 17+.
 - Split screen: hooks `DividerSnapAlgorithm.calculateSnapTarget` so the divider stays wherever it is released inside the screen
 - Small window: hooks `ActivityClientController.checkTaskSupportWr` and `TaskDisplayAreaMifavor.checkTaskSupportForCompWr`, with per-app fallbacks; normal-mode and in-game small windows share this check
 - App cloning: hooks `UpdateUtils.getSupportApps` and returns every installed third-party app with a launcher icon
+- Casting: hooks `DisplayMirrorCtrl.getDisplaySize` so the mirror virtual display uses the sink resolution, and lets raw mouse events through so right click stays a right click
 
 ### Gamepad tweaks
 
@@ -86,6 +89,7 @@ Requires Android SDK (build-tools 35, platforms/android-35) and JDK 17+.
 - Some apps do not handle freeform resizing well and may show black bars, layout glitches or crash
 - Banking and payment apps may refuse to run inside a clone for their own security reasons
 - Home key pass-through only applies to apps that are in a game scene when the key is pressed
+- The cast mouse fix does not cover the built-in virtual touchpad (mouse and touch share one entry point; mouse takes priority)
 
 Pure AI-built project, developed entirely by DeepSeek V4 Flash + Hermes Agent; iterated by Codex since 1.4.
 

@@ -5,6 +5,7 @@ public final class Prefs {
     public static final String SPLIT = "redmagic_fix_split";
     public static final String SMALL_WINDOW = "redmagic_fix_smallwin";
     public static final String DOUBLE_APP = "redmagic_fix_doubleapp";
+    public static final String CAST_SIZE = "redmagic_fix_castsize";
     public static final String GAME_KEY = "redmagic_fix_gamekey";
 
     public static boolean defaultFor(String key) {

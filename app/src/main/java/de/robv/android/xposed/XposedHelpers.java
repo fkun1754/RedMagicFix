@@ -16,6 +16,14 @@ public class XposedHelpers {
         } catch (Exception e) { throw new RuntimeException(e); }
     }
 
+    public static Object getStaticObjectField(Class<?> clazz, String fieldName) {
+        try {
+            java.lang.reflect.Field f = clazz.getDeclaredField(fieldName);
+            f.setAccessible(true);
+            return f.get(null);
+        } catch (Exception e) { throw new RuntimeException(e); }
+    }
+
     public static boolean getBooleanField(Object obj, String fieldName) {
         return (Boolean) getObjectField(obj, fieldName);
     }

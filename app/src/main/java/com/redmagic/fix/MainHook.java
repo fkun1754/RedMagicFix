@@ -13,7 +13,9 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.SystemClock;
+import android.view.InputEvent;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -31,7 +33,7 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
  * 1) 分屏比例无级调节（com.android.systemui）
  * 2) 小窗支持判断放行（android / system_server，另在各小窗 App 内兜底）
  * 3) 应用分身支持列表放开（com.zte.cn.doubleapp）
- * 4) 手柄震动转手机震动（头玩）
+ * 4) 投屏虚拟屏跟随接收端分辨率，并修正外接鼠标输入
  * 5) 手柄 Home 键 BTN_MODE 放行（android / system_server）
  */
 public class MainHook implements IXposedHookLoadPackage {
@@ -47,16 +49,16 @@ public class MainHook implements IXposedHookLoadPackage {
 
     /** 小窗相关 App：框架 hook 不生效时在这些进程里兜底 */
     private static final String[] SMALL_WIN_APP_PKGS = {
-            "com.zte.floatassist",       // 常规悬浮小窗
-            "cn.zte.gamefloat",          // 游戏浮窗服务
-            "cn.nubia.gamelauncher",     // 游戏空间
-            "cn.nubia.gameassist"        // 游戏助手
+            "com.zte.floatassist",
+            "cn.zte.gamefloat",
+            "cn.nubia.gamelauncher",
+            "cn.nubia.gameassist"
     };
 
     private static final String[] CFG_KEYS = {
-            Prefs.SPLIT, Prefs.SMALL_WINDOW, Prefs.DOUBLE_APP, Prefs.GAME_KEY
+            Prefs.SPLIT, Prefs.SMALL_WINDOW, Prefs.DOUBLE_APP, Prefs.CAST_SIZE, Prefs.GAME_KEY
     };
-    private static final boolean[] CFG_DEFAULTS = {true, true, true, false};
+    private static final boolean[] CFG_DEFAULTS = {true, true, true, false, false};
     private static final boolean[] cfgValues = CFG_DEFAULTS.clone();
     private static long cfgLastRead = 0;
     private static volatile boolean cfgRefreshing = false;
@@ -79,7 +81,6 @@ public class MainHook implements IXposedHookLoadPackage {
                 break;
             }
         }
-
     }
 
     /** 分隔条自由停靠：屏幕内任意位置松手即停，拖出边缘仍走系统逻辑关闭分屏 */
@@ -117,6 +118,7 @@ public class MainHook implements IXposedHookLoadPackage {
     /** 小窗支持判断恒为 true：常规小窗 + 游戏模式小窗共用这一处判断 */
     private void hookSmallWindow(LoadPackageParam lpparam) {
         final ClassLoader cl = lpparam.classLoader;
+        Log.d(TAG, "framework hooks init");
         try {
             Class<?> acc = XposedHelpers.findClass(
                     "com.android.server.wm.ActivityClientController", cl);
@@ -134,7 +136,6 @@ public class MainHook implements IXposedHookLoadPackage {
                     Context.class, ComponentName.class, alwaysTrue(Prefs.SMALL_WINDOW));
             Log.d(TAG, "hook installed: checkTaskSupportForCompWr");
 
-            // 真正切 freeform 前的第二道校验，不通过会弹"该应用不支持小窗"
             Class<?> record = XposedHelpers.findClass("com.android.server.wm.ActivityRecord", cl);
             Class<?> task = XposedHelpers.findClass("com.android.server.wm.Task", cl);
             hookReturn(Prefs.SMALL_WINDOW, tda, "isSupportWindowReplyState", 0, record, Context.class);
@@ -146,8 +147,7 @@ public class MainHook implements IXposedHookLoadPackage {
             Log.e(TAG, "checkTaskSupportForCompWr hook failed", t);
         }
 
-        // 手柄 Home 键：ZTE 在游戏场景里把 BTN_MODE 拦下并让游戏助手弹面板，
-        // 这里把该键交还给正常的窗口策略链路（侧滑唤出不受影响）
+        // 手柄 Home 键：ZTE 在游戏场景里把 BTN_MODE 拦下并让游戏助手弹面板
         try {
             Class<?> ims = XposedHelpers.findClass(
                     "com.android.server.input.InputManagerService", cl);
@@ -155,10 +155,17 @@ public class MainHook implements IXposedHookLoadPackage {
                     KeyEvent.class, int.class, new XC_MethodHook() {
                         @Override
                         protected void beforeHookedMethod(MethodHookParam param) {
+                            KeyEvent event = (KeyEvent) param.args[0];
+                            if (enabled(Prefs.CAST_SIZE)
+                                    && event.getKeyCode() == KeyEvent.KEYCODE_BACK
+                                    && (event.getSource() & 0x2002) == 0x2002) {
+                                Log.d(TAG, "drop mouse BACK");
+                                param.setResult(0);
+                                return;
+                            }
                             if (!enabled(Prefs.GAME_KEY)) {
                                 return;
                             }
-                            KeyEvent event = (KeyEvent) param.args[0];
                             if (event.getKeyCode() != KeyEvent.KEYCODE_BUTTON_MODE) {
                                 return;
                             }
@@ -171,7 +178,6 @@ public class MainHook implements IXposedHookLoadPackage {
                                 param.setResult(result);
                             } catch (Throwable t) {
                                 Log.e(TAG, "pass BTN_MODE to policy failed", t);
-                                // 1 = ACTION_PASS_TO_USER，宁可交给前台应用也不要被拦截
                                 param.setResult(1);
                             }
                         }
@@ -179,6 +185,83 @@ public class MainHook implements IXposedHookLoadPackage {
             Log.d(TAG, "hook installed: BTN_MODE pass-through");
         } catch (Throwable t) {
             Log.e(TAG, "BTN_MODE hook failed", t);
+        }
+
+        hookCast(lpparam);
+    }
+
+    /** 投屏：虚拟屏跟随接收端分辨率；外接鼠标走原始注入，触摸保持官方合成 */
+    private void hookCast(LoadPackageParam lpparam) {
+        final ClassLoader cl = lpparam.classLoader;
+        try {
+            Class<?> ctrl = XposedHelpers.findClass(
+                    "com.android.server.display.DisplayMirrorCtrl", cl);
+            Class<?> info = XposedHelpers.findClass("android.view.DisplayInfo", cl);
+            Class<?> sizeCls = XposedHelpers.findClass(
+                    "com.android.server.display.DisplayMirrorCtrl$DisplaySize", cl);
+            XposedHelpers.findAndHookMethod(ctrl, "getDisplaySize",
+                    info, boolean.class, boolean.class, new XC_MethodHook() {
+                        @Override
+                        protected void afterHookedMethod(MethodHookParam param) {
+                            if (!enabled(Prefs.CAST_SIZE)) {
+                                return;
+                            }
+                            Object displayInfo = param.args[0];
+                            if (displayInfo == null) {
+                                return;
+                            }
+                            try {
+                                int type = XposedHelpers.getIntField(displayInfo, "type");
+                                if (type < 2) {
+                                    return;
+                                }
+                                int w = XposedHelpers.getIntField(displayInfo, "logicalWidth");
+                                int h = XposedHelpers.getIntField(displayInfo, "logicalHeight");
+                                if (w <= 0 || h <= 0) {
+                                    return;
+                                }
+                                param.setResult(XposedHelpers.newInstance(
+                                        sizeCls, param.thisObject, w, h));
+                                Log.d(TAG, "cast size -> " + w + "x" + h);
+                            } catch (Throwable t) {
+                                Log.e(TAG, "apply cast size failed", t);
+                            }
+                        }
+                    });
+            Log.d(TAG, "hook installed: DisplayMirrorCtrl.getDisplaySize");
+
+            Class<?> mirrorDisplay = XposedHelpers.findClass(
+                    "com.android.server.display.DisplayMirrorCtrl$MirrorDisplay", cl);
+            XposedHelpers.findAndHookMethod(ctrl, "handleMouseRightButton",
+                    InputEvent.class, mirrorDisplay, new XC_MethodHook() {
+                        @Override
+                        protected void beforeHookedMethod(MethodHookParam param) {
+                            if (enabled(Prefs.CAST_SIZE)) {
+                                param.setResult(Boolean.FALSE);
+                            }
+                        }
+                    });
+            Log.d(TAG, "hook installed: right button pass-through");
+
+            // 鼠标事件不再合成触摸；触摸（官方虚拟触控板）保持原有路径
+            XposedHelpers.findAndHookMethod(ctrl, "changeEventToMirror",
+                    InputEvent.class, new XC_MethodHook() {
+                        @Override
+                        protected void beforeHookedMethod(MethodHookParam param) {
+                            if (!enabled(Prefs.CAST_SIZE)) {
+                                return;
+                            }
+                            Object event = param.args[0];
+                            if (!(event instanceof MotionEvent)) {
+                                return;
+                            }
+                            // 一律不合成触摸，保证外接鼠标左右键正常（触控板不支持）
+                            param.setResult(Boolean.FALSE);
+                        }
+                    });
+            Log.d(TAG, "hook installed: raw mouse injection (touch untouched)");
+        } catch (Throwable t) {
+            Log.e(TAG, "cast hook failed", t);
         }
     }
 
@@ -310,7 +393,6 @@ public class MainHook implements IXposedHookLoadPackage {
         if (now - cfgLastRead > 1500L && !cfgRefreshing) {
             cfgLastRead = now;
             cfgRefreshing = true;
-            // 放到后台线程查询，避免阻塞输入分发线程
             cfgHandler().post(new Runnable() {
                 @Override
                 public void run() {

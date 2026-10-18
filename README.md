@@ -13,6 +13,8 @@
 - 分屏比例无级调节：分隔条拖到任意位置松手即停，横屏、竖屏均生效
 - 小窗不限应用：常规小窗与游戏模式小窗都能打开任意第三方 App
 - 应用分身不限应用：分身列表显示所有已安装的第三方 App
+- 投屏跟随接收端分辨率：拓展/镜像投屏的虚拟屏改用接收端分辨率（如电视 1920×1080）
+- 投屏鼠标修正：外接鼠标左右键可用，右键不再被系统转成返回
 
 ### 手柄功能修改
 
@@ -20,7 +22,7 @@
 
 ## 设置页
 
-四个开关：分屏比例无级调节、小窗不限应用、应用分身不限应用、手柄 Home 键放行。修改后 1.5 秒内生效（系统框架里的改动需重启手机）。
+五个开关：分屏比例无级调节、小窗不限应用、应用分身不限应用、投屏跟随接收端分辨率、手柄 Home 键放行。修改后 1.5 秒内生效（系统框架里的改动需重启手机）。
 
 另有「隐藏桌面图标」开关，默认勾选（清单里就是 `android:enabled="false"`）。模块不显示图标时，从 **LSPosed → 模块 → RedMagic Fix** 的设置入口打开（也可以 `adb shell am start -n com.redmagic.fix/.SettingsActivity`）。
 
@@ -56,7 +58,7 @@
 
 ```bash
 bash build.sh
-# 输出：build/RedMagicFix-v1.6.apk
+# 输出：build/RedMagicFix-v1.7.apk
 ```
 
 Windows PowerShell：
@@ -74,6 +76,7 @@ powershell -ExecutionPolicy Bypass -File build.ps1
 - 分屏：Hook 系统分屏的停靠点计算（`DividerSnapAlgorithm.calculateSnapTarget`），分隔条位于屏幕内时直接停靠当前位置
 - 小窗：Hook 系统的小窗支持判断（`ActivityClientController.checkTaskSupportWr`、`TaskDisplayAreaMifavor.checkTaskSupportForCompWr`），并在各小窗 App 内做兜底；常规小窗与游戏模式小窗共用这一处判断
 - 分身：Hook 应用分身的支持列表（`UpdateUtils.getSupportApps`），返回所有带桌面图标的第三方 App
+- 投屏：Hook `DisplayMirrorCtrl.getDisplaySize`，把镜像虚拟屏的尺寸改成接收端的分辨率；同时让外接鼠标事件走原始注入，右键不再被系统映射成返回
 
 ### 手柄功能
 
@@ -86,6 +89,7 @@ powershell -ExecutionPolicy Bypass -File build.ps1
 - 部分 App 自身不适配自由窗口，可能出现黑边、界面错位或闪退
 - 银行、支付类 App 可能因自身安全策略拒绝在分身环境运行
 - 手柄 Home 键放行只对按下时处于游戏场景的 App 生效
+- 投屏鼠标修正不支持官方"虚拟触控板"（鼠标与触摸共用同一入口，暂以鼠标优先）
 
 纯 AI 构建项目，由 DeepSeek V4 Flash + Hermes Agent 全程开发，1.4 起由 Codex 迭代。
 

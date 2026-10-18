@@ -62,6 +62,6 @@ if [ ! -f "$KEYSTORE" ]; then
 fi
 java -jar "$BT/lib/apksigner.jar" sign \
   --ks "$KEYSTORE" --ks-pass pass:android --ks-key-alias splitfix \
-  --out "$OUT/RedMagicFix-v1.6.apk" "$OUT/unsigned.apk"
-java -jar "$BT/lib/apksigner.jar" verify "$OUT/RedMagicFix-v1.6.apk" && echo "SIGN OK"
-ls -la "$OUT/RedMagicFix-v1.6.apk"
+  --out "$OUT/RedMagicFix-v1.7.apk" "$OUT/unsigned.apk"
+java -jar "$BT/lib/apksigner.jar" verify "$OUT/RedMagicFix-v1.7.apk" && echo "SIGN OK"
+ls -la "$OUT/RedMagicFix-v1.7.apk"

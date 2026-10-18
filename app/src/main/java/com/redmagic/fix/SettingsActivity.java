@@ -20,18 +20,19 @@ import android.widget.Toast;
 public class SettingsActivity extends Activity {
 
     private static final String[] KEYS = {
-            Prefs.SPLIT, Prefs.SMALL_WINDOW, Prefs.DOUBLE_APP, Prefs.GAME_KEY
+            Prefs.SPLIT, Prefs.SMALL_WINDOW, Prefs.DOUBLE_APP, Prefs.CAST_SIZE, Prefs.GAME_KEY
     };
     private static final String[] TITLES = {
-            "分屏比例无级调节", "小窗不限应用", "应用分身不限应用", "手柄 Home 键放行"
+            "分屏比例无级调节", "小窗不限应用", "应用分身不限应用", "投屏跟随接收端分辨率", "手柄 Home 键放行"
     };
     private static final String[] DESCS = {
             "分隔条拖到任意位置松手即停",
             "常规小窗与游戏模式小窗可打开任意第三方 App",
             "分身列表显示所有已安装的第三方 App",
+            "拓展/镜像投屏时，虚拟屏改用接收端的分辨率（实验性，可能影响画面比例）",
             "游戏里 Home 键不再唤出游戏助手，完整交给游戏；侧滑面板保持可用"
     };
-    private static final boolean[] DEFAULTS = {true, true, true, false};
+    private static final boolean[] DEFAULTS = {true, true, true, false, false};
 
     private final Switch[] switches = new Switch[KEYS.length];
 
@@ -60,11 +61,11 @@ public class SettingsActivity extends Activity {
         root.addView(hint);
 
         addSection(root, "手机功能修改");
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 4; i++) {
             root.addView(buildRow(i));
         }
         addSection(root, "手柄功能修改");
-        root.addView(buildRow(3));
+        root.addView(buildRow(4));
 
         addSection(root, "其他");
         root.addView(buildHideIconRow());
